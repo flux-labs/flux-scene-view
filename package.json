@@ -1,0 +1,19 @@
+{
+  "name": "flux-scene-view",
+  "version": "0.0.1",
+  "description": "View and inspect scenes.",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.13.4"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:flux-labs/flux-scene-view.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/flux-labs/flux-scene-view"
+}
