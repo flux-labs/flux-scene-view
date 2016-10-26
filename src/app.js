@@ -83,8 +83,6 @@ FluxApp.prototype.populateProjects = function (projectPromise) {
             option.textContent = entity.name;
         }
         _this._loginButton.classList.add('hidden');
-        _this._keysMenu.removeAttribute('disabled');
-        _this._keyButton.removeAttribute('disabled');
     });
 }
 
@@ -98,6 +96,8 @@ FluxApp.prototype.populateKeys = function (keysPromise) {
             option.value = entity.id;
             option.textContent = entity.label;
         }
+        _this._keysMenu.removeAttribute('disabled');
+        _this._keyButton.removeAttribute('disabled');
     });
 }
 
@@ -105,10 +105,18 @@ FluxApp.prototype.populateValue = function (valuePromise) {
     var _this = this;
     valuePromise.then(function (entity) {
         _this.vp.setGeometryEntity(entity.value).then(function (result) {
-            console.log('Errors for key ('+entity.label+'): '+result.getErrorSummary());
+            var errors = result.getErrorSummary()
+            if (errors) {
+                console.warn('Errors for key ('+entity.label+'): '+errors);
+            }
         });
         _this.keyIsImage = false;
         _this.showViewport();
+
+        if (!_this.tree) {
+            _this.tree = new Scene();
+            _this.tree.createTree(entity.value);
+        }
     });
 }
 
