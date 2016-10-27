@@ -96,7 +96,6 @@ Scene.prototype.createTree = function (entities) {
 }
 
 Scene.prototype.focus = function (obj) {
-    console.log('focus!');
     this._vp.focus(this.selection);
 };
 
