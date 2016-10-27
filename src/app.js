@@ -114,7 +114,7 @@ FluxApp.prototype.populateValue = function (valuePromise) {
         _this.showViewport();
 
         if (!_this.tree) {
-            _this.tree = new Scene();
+            _this.tree = new Scene(_this.vp, entity.value);
             _this.tree.createTree(entity.value);
         }
     });
@@ -122,6 +122,10 @@ FluxApp.prototype.populateValue = function (valuePromise) {
 
 FluxApp.prototype.logout = function () {
     this._fluxDataSelector.logout();
+}
+
+FluxApp.prototype.focus = function (obj) {
+    this.tree.focus(obj);
 }
 
 /**
