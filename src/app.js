@@ -109,6 +109,7 @@ FluxApp.prototype.populateValue = function (valuePromise) {
             if (errors) {
                 console.warn('Errors for key ('+entity.label+'): '+errors);
             }
+            _this.tree.setObjectMap(result.getObjectMap());
         });
         _this.keyIsImage = false;
         _this.showViewport();

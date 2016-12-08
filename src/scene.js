@@ -5,6 +5,14 @@ function Scene(viewport, data) {
     this._data = data;
     this._vp = viewport;
     this._layers = [];
+    this._objectMap = {};
+    var _this = this;
+    viewport.addEventListener('change', function (event) {
+        if (event.event === 'select') {
+            _this.onSelected(event);
+        }
+    });
+    this._updateViewport = true;
 }
 
 function createTreeNode(entity, children) {
@@ -95,18 +103,42 @@ Scene.prototype.createTree = function (entities) {
     this._treeDiv.on("changed.jstree", this.updateSelected.bind(this));
 }
 
+Scene.prototype.setObjectMap = function (obj) {
+    this._objectMap = obj;
+};
+
 Scene.prototype.focus = function (obj) {
     this._vp.focus(this.selection);
 };
 
-Scene.prototype.updateSelected = function (e, data) {
-    var _this = this;
-    this._vp.setGeometryEntity(this._data).then(function(results) {
-        for (var i=0;i<data.selected.length; i++) {
-            results.setElementColor(data.selected[i], [1,1,0]);
+// when the user updates selection in viewport
+Scene.prototype.onSelected = function (event) {
+    this._updateViewport = false;
+    this.tree.deselect_all();
+    if (event.selection) {
+        var keys = Object.keys(event.selection);
+        for (var i=0;i<keys.length;i++) {
+            var obj = event.selection[keys[i]];
+            if (!obj) continue;
+            var id = obj.userData.id;
+            if (obj.parent && obj.parent.userData.primitive === 'instance')
+                id = obj.parent.userData.id;
+            this.tree.select_node(id);
         }
-        _this.selection = results._sceneObjectMap[data.selected[0]];
-        _this._vp.render();
-    })
+    }
+    this._updateViewport = true;
+};
 
+// update viewport selection from tree changes
+Scene.prototype.updateSelected = function (e, data) {
+    if (!this._updateViewport) return;
+    var selectionList = [];
+    for (var i=0;i<data.selected.length; i++) {
+        var id = data.selected[i];
+        var obj = this._objectMap[id];
+        if (!obj) continue;
+        selectionList.push(obj);
+    }
+    this._vp.setSelection(selectionList);
+    this._vp.render();
 }
