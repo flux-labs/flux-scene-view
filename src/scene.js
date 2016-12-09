@@ -1,5 +1,5 @@
 
-function Scene(viewport, data) {
+function Scene(viewport, data, infoDiv) {
     this._treeDiv = $('#tree');
     this._scene = {};
     this._data = data;
@@ -12,6 +12,7 @@ function Scene(viewport, data) {
             _this.onSelected(event);
         }
     });
+    this._infoDiv = infoDiv;
     this._updateViewport = true;
 }
 
@@ -120,6 +121,24 @@ Scene.prototype.focus = function (obj) {
     this._vp.focus(this.selection);
 };
 
+// Update the info panel with the json for the selection
+Scene.prototype.updateInfo = function (event) {
+    var selection = this._vp.getSelection();   
+    var data = ''; 
+    if (selection.length >0 ) {
+        var json = this._vp.getJson(selection)[0]; // just use the first item
+        if (json.attributes) {
+            json = json.attributes;
+        }
+        data = JSON.stringify(json, null, ' ');        
+    }
+    var maxLen = 10000;
+    if (data.length > maxLen) {
+        data = data.substring(0,maxLen)+"\nContent is very long and has been clipped...";
+    }
+    this._infoDiv.textContent = data;
+};
+
 // when the user updates selection in viewport
 Scene.prototype.onSelected = function (event) {
     this._updateViewport = false;
@@ -131,6 +150,7 @@ Scene.prototype.onSelected = function (event) {
         this.tree.select_node(id);
     }
     this._updateViewport = true;
+    this.updateInfo();
 };
 
 // update viewport selection from tree changes
@@ -138,4 +158,5 @@ Scene.prototype.updateSelected = function (e, data) {
     if (!this._updateViewport) return;
     this._vp.setSelection(data.selected);//selectionList
     this._vp.render();
+    this.updateInfo();
 }

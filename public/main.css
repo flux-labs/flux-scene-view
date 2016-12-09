@@ -11,12 +11,12 @@
 	/*opacity: 0.01;*/
 }
 
-#scene {
+.scene {
 	user-select: none;
 	background-color: #eeeeee;
 	border: 1px solid black;
 	display: inline-block;
-	height: 512px;
+	height: 252px;
 	width: 512px;
 	margin-left: 1.0em;
 	overflow: auto;

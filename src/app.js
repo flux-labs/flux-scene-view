@@ -3,6 +3,7 @@
 function FluxApp (clientKey, redirectUri, projectMenu, isProd){
     this._fluxDataSelector = new FluxDataSelector(clientKey, redirectUri, {isProd:isProd});
     this._projectMenu = projectMenu;
+    this._infoDiv = document.querySelector('#info');
     this._keysMenu = document.querySelector('#keysMenu');
     this._keysMenu = document.querySelector('#keysMenu');
     this._keyButton = document.querySelector('#keyButton');
@@ -46,7 +47,8 @@ FluxApp.prototype.selectProject = function () {
     this._dt = this._fluxDataSelector.getDataTable(this._projectMenu.value).table;
     this.vp = new FluxViewport(this._vpDiv,{
         projectId: this._projectMenu.value,
-        token: this.getFluxToken()
+        token: this.getFluxToken(),
+        selection: FluxViewport.getSelectionModes().CLICK
     });
     this.vp.setupDefaultLighting();
     this.vp.homeCamera();
@@ -115,7 +117,7 @@ FluxApp.prototype.populateValue = function (valuePromise) {
         _this.showViewport();
 
         if (!_this.tree) {
-            _this.tree = new Scene(_this.vp, entity.value);
+            _this.tree = new Scene(_this.vp, entity.value, _this._infoDiv);
             _this.tree.createTree(entity.value);
         }
     });
