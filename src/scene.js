@@ -1,11 +1,11 @@
 
-function Scene(viewport, data, infoDiv) {
+function Scene(viewport, data, infoDiv, objMap) {
     this._treeDiv = $('#tree');
     this._scene = {};
     this._data = data;
     this._vp = viewport;
     this._layers = [];
-    this._objectMap = {};
+    this._objectMap = objMap;
     var _this = this;
     viewport.addEventListener('change', function (event) {
         if (event.event === 'select') {
@@ -102,20 +102,30 @@ Scene.prototype.createTree = function (entities) {
             if (entity == null || typeof entity != 'object' || !entity.primitive) continue;
             if (!entity.id) {
                 entity.id = entity.fluxId;
-                if (!entity.id) continue;
+                if (!entity.id) {
+                    continue;  
+                } 
             }
             this._scene[entity.id] = entity;
             data.push(createTreeNode(entity));
+        }
+        // Check if it's legacy geometry with no ids
+        if (data.length === 0) {
+            var keys = Object.keys(this._objectMap);
+            for (i=0;i<keys.length;i++) {
+                var obj = this._objectMap[keys[i]];
+                var entity = obj.userData.data;
+                var id = obj.userData.id;
+                entity.id = id;
+                this._scene[entity.id] = entity;
+                data.push(createTreeNode(entity));
+            }
         }
     }
     this.tree = $.jstree.create(this._treeDiv,tree);
 
     this._treeDiv.on("changed.jstree", this.updateSelected.bind(this));
 }
-
-Scene.prototype.setObjectMap = function (obj) {
-    this._objectMap = obj;
-};
 
 Scene.prototype.focus = function (obj) {
     this._vp.focus(this.selection);
@@ -156,7 +166,7 @@ Scene.prototype.onSelected = function (event) {
 // update viewport selection from tree changes
 Scene.prototype.updateSelected = function (e, data) {
     if (!this._updateViewport) return;
-    this._vp.setSelection(data.selected);//selectionList
+    this._vp.setSelection(data.selected);
     this._vp.render();
     this.updateInfo();
 }

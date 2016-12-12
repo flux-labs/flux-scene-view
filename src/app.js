@@ -19,17 +19,6 @@ function FluxApp (clientKey, redirectUri, projectMenu, isProd){
     this.hideViewport();
 }
 
-FluxApp.keyDescription = 'Image blob';
-
-FluxApp.prototype.addListener = function (imageCanvas) {
-    var _this = this;
-    imageCanvas.addEventListener('mousedown', function (e) {
-        if (!_this.keyIsImage) {
-            _this.showViewport();
-        }
-    });
-};
-
 FluxApp.prototype.login = function () {
     this._fluxDataSelector.login();
 }
@@ -111,15 +100,13 @@ FluxApp.prototype.populateValue = function (valuePromise) {
             if (errors) {
                 console.warn('Errors for key ('+entity.label+'): '+errors);
             }
-            _this.tree.setObjectMap(result.getObjectMap());
+            if (!_this.tree) {
+                _this.tree = new Scene(_this.vp, entity.value, _this._infoDiv, result.getObjectMap());
+                _this.tree.createTree(entity.value);
+            }
         });
-        _this.keyIsImage = false;
         _this.showViewport();
 
-        if (!_this.tree) {
-            _this.tree = new Scene(_this.vp, entity.value, _this._infoDiv);
-            _this.tree.createTree(entity.value);
-        }
     });
 }
 
