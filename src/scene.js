@@ -74,6 +74,7 @@ Scene.prototype.createLayer = function (entity) {
 }
 
 Scene.prototype.createTree = function (entities) {
+    if (!entities) return;
     var data = [];
     var tree = {
         "core": {
@@ -103,8 +104,8 @@ Scene.prototype.createTree = function (entities) {
             if (!entity.id) {
                 entity.id = entity.fluxId;
                 if (!entity.id) {
-                    continue;  
-                } 
+                    continue;
+                }
             }
             this._scene[entity.id] = entity;
             data.push(createTreeNode(entity));
@@ -133,14 +134,14 @@ Scene.prototype.focus = function (obj) {
 
 // Update the info panel with the json for the selection
 Scene.prototype.updateInfo = function (event) {
-    var selection = this._vp.getSelection();   
-    var data = ''; 
+    var selection = this._vp.getSelection();
+    var data = '';
     if (selection.length >0 ) {
         var json = this._vp.getJson(selection)[0]; // just use the first item
         if (json.attributes) {
             json = json.attributes;
         }
-        data = JSON.stringify(json, null, ' ');        
+        data = JSON.stringify(json, null, ' ');
     }
     var maxLen = 10000;
     if (data.length > maxLen) {
